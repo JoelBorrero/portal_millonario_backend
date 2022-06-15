@@ -14,7 +14,7 @@ class MahouModelManager(models.Manager):
         return MahouModelQuerySet(self.model, using=self._db)
 
     def all(self):
-        return self.get_queryset().all().order_by('-id')
+        return self.get_queryset().all().order_by("-id")
 
     def removed(self):
-        return self.get_queryset().removed().order_by('-id')
+        return self.get_queryset().removed().order_by("-id")

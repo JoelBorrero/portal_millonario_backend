@@ -244,7 +244,7 @@ var WebSocketBridge = function () {
 
     /**
      * The underlaying `ReconnectingWebSocket` instance.
-     * 
+     *
      * @type {ReconnectingWebSocket}
      */
     this.socket = null;

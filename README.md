@@ -8,7 +8,7 @@ Requisitos tecnicos para poder correr el backend
 - Ejecutar los comandos de migracion y creacion de super usuario en orden
 
 ### Configurar el entorno por primera vez
-en la raiz del proyecto existe un archivo llamado** env.template** 
+en la raiz del proyecto existe un archivo llamado** env.template**
 este archivo contiene nuestras variables de entorno con valores por defectos
 usted puede cambiarlos por los valores que quiera
 
