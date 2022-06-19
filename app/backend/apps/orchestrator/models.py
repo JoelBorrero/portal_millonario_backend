@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 from ..course.models import Course, VideoClass
@@ -31,9 +31,12 @@ class Bill(ModelBase):
     schedule = models.ForeignKey(
         Schedule, on_delete=models.CASCADE, verbose_name="Cronograma"
     )
-    value = models.PositiveIntegerField("Valor")
+    amount = models.PositiveIntegerField("Valor")
     status = models.CharField("Estado", choices=PAYMENT_STATUSES, max_length=1)
     payment_date = models.DateTimeField("Fecha de pago", blank=True, null=True)
+    payment_method = models.CharField("Método de pago", max_length=30)
+    reference = models.CharField("Referencia", max_length=30)
+    wompi_id = models.CharField("Id Wompi", max_length=50)
 
     def __str__(self):
         return f"Factura #{self.id}"
@@ -73,6 +76,7 @@ class Settings(ModelBase):
     referral_tax = models.PositiveSmallIntegerField(
         "Tasa de referido (%)", validators=[MaxValueValidator(100)]
     )
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

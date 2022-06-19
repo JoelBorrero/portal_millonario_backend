@@ -23,6 +23,6 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(VideoClass)
 class VideoClassAdmin(admin.ModelAdmin):
-    list_display = ("url", "synchronous", "start_time", "duration_in_minutes")
+    list_display = ("name", "url", "synchronous", "start_time", "duration_in_minutes")
     list_filter = ("synchronous", "duration_in_minutes")
     search_fields = ("url",)

@@ -156,10 +156,6 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-HAUT_EMAIL = os.environ.get("HAUT_EMAIL", "")
-HAUT_PASSWORD = os.environ.get("HAUT_PASSWORD", "")
-SIIGO_USERNAME = os.environ.get("SIIGO_USERNAME", "")
-SIIGO_ACCES_KEY = os.environ.get("SIIGO_ACCES_KEY", "")
 
 # Channel layer definitions
 # http://channels.readthedocs.org/en/latest/deploying.html#setting-up-a-channel-backend

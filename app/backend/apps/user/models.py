@@ -9,7 +9,9 @@ class BaseUser(User):
     profile_pic = models.CharField(
         "Foto de perfil", max_length=200, blank=True, null=True
     )
-    gender = models.CharField("Género", choices=GENDERS, max_length=1)
+    gender = models.CharField(
+        "Género", choices=GENDERS, max_length=1, blank=True, null=True
+    )
     phone_number = models.CharField("Teléfono", max_length=20, blank=True, null=True)
 
     def __str__(self):

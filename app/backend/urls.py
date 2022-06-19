@@ -6,7 +6,7 @@ from rest_framework_swagger.views import get_swagger_view
 
 
 router = DefaultRouter()
-schema_view = get_swagger_view(title="Belihebe")
+schema_view = get_swagger_view(title="Portal Millonario")
 PREFIX_URL = settings.PREFIX_URL
 urlpatterns = [
     url(r"^{}admin/".format(PREFIX_URL), admin.site.urls),

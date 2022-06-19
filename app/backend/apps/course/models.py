@@ -38,8 +38,9 @@ class Course(ModelBase):
 
 
 class VideoClass(ModelBase):
+    name = models.CharField("Nombre", max_length=100)
     url = models.CharField(max_length=200)
-    synchronous = models.BooleanField("Asíncrona")
+    synchronous = models.BooleanField("Síncrona")
     start_time = models.DateTimeField("Fecha de inicio")
     duration_in_minutes = models.PositiveSmallIntegerField("Duración")
 

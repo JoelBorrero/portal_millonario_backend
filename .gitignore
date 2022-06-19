@@ -11,3 +11,4 @@ redis-data
 .vscode/
 app/media
 app/backend/apps/*/migrations/0*
+app/static

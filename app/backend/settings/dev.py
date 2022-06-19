@@ -36,10 +36,9 @@ LOGGING = {
             "handlers": ["console"],
         },
         "backend": {
-            "level": "INFO",
             "handlers": ["console"],
+            "level": "INFO",
         },
-        "OSW4L": {"level": "WARNING", "handlers": ["console"]},
     },
 }
 

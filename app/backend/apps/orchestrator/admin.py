@@ -5,7 +5,7 @@ from .models import Bill, CourseFeedback, Schedule, TeacherFeedback, Settings
 
 @admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
-    list_display = ("id", "buyer", "schedule", "value", "status", "payment_date")
+    list_display = ("id", "buyer", "schedule", "amount", "status", "payment_date")
     list_filter = ("status", "buyer")
 
 
@@ -23,7 +23,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(Settings)
 class SettingsAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "referral_tax")
+    list_display = ("id", "name", "referral_tax", "is_active")
 
 
 @admin.register(TeacherFeedback)
