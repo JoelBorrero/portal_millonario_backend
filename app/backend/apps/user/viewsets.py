@@ -1,14 +1,11 @@
 import logging
 
-from django.contrib.auth.hashers import make_password
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .models import Student, Teacher
-from .serializers import StudentSerializer  # , TeacherSerializer
-from ..course.models import Course
+from ..orchestrator.models import Bill
+from ..orchestrator.serializers import ScheduleSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +15,14 @@ logger = logging.getLogger(__name__)
 #     queryset = model.objects.all()
 #     serializer_class = StudentSerializer
 class StudentViewSet(viewsets.ViewSet):
-    pass
-    # @action(methods=["post"], detail=True)
-    # def get_courses_bought(self, request):
-    #     res = {}
-    #     return Response(res, status.HTTP_200_OK)
+    @action(methods=["get"], detail=False)
+    def get_courses_bought(self, request):
+        """Returns the list of courses bought by the user"""
+        bills = Bill.objects.filter(buyer=request.user)
+        logger.info(request.user)
+        schedules = [bill.schedule for bill in bills]
+        res = ScheduleSerializer(schedules, many=True).data
+        return Response(res, status.HTTP_200_OK)
 
     # @action(methods=["post"], detail=True)
     # def update_profile(self, request):

@@ -26,7 +26,8 @@ class NoAuthViewSet(viewsets.ViewSet):
     def get_courses(self, request):
         """
         Returns a list of courses. Allow parameters as area, tag and limit.
-        If neither area not tag are sent, query will be objects.all()
+        If there are not parameters, query will be objects.all()
+        Optional query parameters: area, tag & limit - ?area=Area&tag=Tag&limit=10
         """
         data = request.GET
         if data and not all(param in ["area", "tag", "limit"] for param in data):
@@ -51,9 +52,25 @@ class NoAuthViewSet(viewsets.ViewSet):
         res = CourseSerializer(courses, many=True).data
         return Response(res, status.HTTP_200_OK)
 
+    @action(detail=True, methods=["get"])
+    def get_schedules(self, request, pk):
+        """
+        Returns the scheduled options for the requested course
+        Param - pk: int
+        """
+        course = Course.objects.get(pk=pk)
+        schedules = Schedule.objects.filter(
+            course=course, start_time__gte=datetime.now()
+        )
+        data = ScheduleSerializer(schedules, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
+
     @action(methods=["post"], detail=False)
     def login(self, request):
-        """Authenticates a user using username and password. Also appends user data to the response."""
+        """
+        Authenticates a user using username and password. Also appends user data to the response.
+        Required body - {username: str, password: str}
+        """
         data = request.data
         user = authenticate(username=data["username"], password=data["password"])
         if user:
@@ -75,7 +92,6 @@ class NoAuthViewSet(viewsets.ViewSet):
 
         Required body - {first_name: str, last_name: str, username: str, password: str}
         """
-        # TODO Login & return user data, autologin on register
         data = request.data
         try:
             student = Student.objects.create(
@@ -129,16 +145,3 @@ class BillViewSet(viewsets.ViewSet):
 #     model = Schedule
 #     queryset = model.objects.all()
 #     serializer_class = ScheduleSerializer
-class ScheduleViewSet(viewsets.ViewSet):
-    @action(detail=True, methods=["get"])
-    def get_schedules(self, request, pk):
-        """
-        Returns the scheduled options for the requested course
-        Param - pk: int
-        """
-        course = Course.objects.get(pk=pk)
-        schedules = Schedule.objects.filter(
-            course=course, start_time__gte=datetime.now()
-        )
-        data = ScheduleSerializer(schedules, many=True).data
-        return Response(data, status=status.HTTP_200_OK)

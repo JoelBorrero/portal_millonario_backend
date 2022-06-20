@@ -33,7 +33,7 @@ class Bill(ModelBase):
         Schedule, on_delete=models.CASCADE, verbose_name="Cronograma"
     )
     amount = models.PositiveIntegerField("Valor")
-    status = models.CharField("Estado", choices=PAYMENT_STATUSES, max_length=1)
+    payment_status = models.CharField("Estado", choices=PAYMENT_STATUSES, max_length=1)
     payment_date = models.DateTimeField("Fecha de pago", blank=True, null=True)
     payment_method = models.CharField("Método de pago", max_length=30)
     reference = models.CharField("Referencia", max_length=30)

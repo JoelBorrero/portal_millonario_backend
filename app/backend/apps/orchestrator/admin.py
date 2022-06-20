@@ -5,8 +5,15 @@ from .models import Bill, CourseFeedback, Schedule, TeacherFeedback, Settings
 
 @admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
-    list_display = ("id", "buyer", "schedule", "amount", "status", "payment_date")
-    list_filter = ("status", "buyer")
+    list_display = (
+        "id",
+        "buyer",
+        "schedule",
+        "amount",
+        "payment_status",
+        "payment_date",
+    )
+    list_filter = ("payment_status", "buyer")
 
 
 @admin.register(CourseFeedback)

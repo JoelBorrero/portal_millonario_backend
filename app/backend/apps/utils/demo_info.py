@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
-from random import randint, randrange, choice, sample
+from random import randint, randrange, choice, sample, uniform
 
-from backend.apps.course.models import Area, Course, VideoClass, Tag
+from django.contrib.auth.hashers import make_password
+
+from .constants import PAYMENT_STATUSES
+from ..course.models import Area, Course, VideoClass, Tag
 from ..orchestrator.models import (
     Bill,
     CourseFeedback,
@@ -51,35 +54,30 @@ TEACHERS = (
         "last_name": "Johnson",
         "username": "amelia_johnson1",
         "gender": "f",
-        "rating": 3.8,
     },
     {
         "first_name": "Emily",
         "last_name": "Jones",
         "username": "emily_jones2",
         "gender": "f",
-        "rating": 3.2,
     },
     {
         "first_name": "Sophie",
         "last_name": "Thomas",
         "username": "sophie_thomas3",
         "gender": "f",
-        "rating": 4.8,
     },
     {
         "first_name": "Fabian",
         "last_name": "West",
         "username": "fabian_west4",
         "gender": "m",
-        "rating": 3.9,
     },
     {
         "first_name": "Jennifer",
         "last_name": "Gates",
         "username": "jennifer_gates5",
         "gender": "f",
-        "rating": 4.5,
     },
 )
 
@@ -175,6 +173,7 @@ SETTINGS = (
 def perform_creation():
     created_data = {
         "areas": [],
+        "bills": [],
         "courses": [],
         "schedules": [],
         "settings": [],
@@ -184,11 +183,14 @@ def perform_creation():
         "video_classes": [],
     }
     for teacher in TEACHERS:
+        teacher["rating"] = uniform(3, 5)
+        teacher["password"] = make_password("123")
         t, _ = Teacher.objects.update_or_create(
             username=teacher["username"], defaults=teacher
         )
         created_data["teachers"].append(t)
     for student in STUDENTS:
+        student["password"] = make_password("123")
         s, _ = Student.objects.update_or_create(
             username=student["username"], defaults=student
         )
@@ -251,6 +253,7 @@ def perform_creation():
                 teacher=teacher,
                 start_time=start_time,
             )
+            created_data["schedules"].append(s)
             for st in sample(
                 created_data["students"], randint(2, len(STUDENTS) - 1) // 2
             ):
@@ -259,3 +262,32 @@ def perform_creation():
                 created_data["video_classes"], randint(2, len(VIDEO_CLASSES) - 1) // 3
             ):
                 s.classes.add(c)
+    else:
+        created_data["schedules"] = Schedule.objects.all()
+    if Bill.objects.count() < 10:
+        payment_methods = [
+            "Efectivo",
+            "Tarjeta de crédito",
+            "Transferencia bancaria",
+            "Bitcoin",
+        ]
+        for i in range(10):
+            buyer = choice(created_data["students"])
+            schedule = choice(created_data["schedules"])
+            amount = schedule.course.price
+            payment_status = choice(PAYMENT_STATUSES)[0]
+            payment_date = now - timedelta(hours=randint(1, 100), minutes=randrange(60))
+            payment_method = choice(payment_methods)
+            reference = "reference"
+            wompi_id = "wompi_id"
+            b = Bill.objects.create(
+                buyer=buyer,
+                schedule=schedule,
+                amount=amount,
+                payment_status=payment_status,
+                payment_date=payment_date,
+                payment_method=payment_method,
+                reference=reference,
+                wompi_id=wompi_id,
+            )
+            created_data["bills"].append(b)
