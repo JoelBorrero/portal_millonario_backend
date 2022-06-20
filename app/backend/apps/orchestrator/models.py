@@ -15,6 +15,7 @@ class Schedule(ModelBase):
     )
     classes = models.ManyToManyField(VideoClass, verbose_name="Clases")
     calendar = models.TextField("Calendario", default="{}")
+    start_time = models.DateTimeField("Fecha de inicio")
 
     def __str__(self):
         return f"Cronograma {self.pk} - {self.course}"

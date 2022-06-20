@@ -23,6 +23,7 @@ class Tag(ModelBase):
 class Course(ModelBase):
     name = models.CharField("Nombre", max_length=100)
     description = models.TextField("Descripción", default="")
+    content = models.TextField("Contenido", default="[]")
     intro_url = models.CharField("Intro url", max_length=200)
     price = models.PositiveIntegerField("Precio")
     teachers = models.ManyToManyField(Teacher, blank=True, verbose_name="Profesores")
@@ -45,7 +46,7 @@ class VideoClass(ModelBase):
     duration_in_minutes = models.PositiveSmallIntegerField("Duración")
 
     def __str__(self):
-        return self.url
+        return self.name
 
     class Meta:
         verbose_name = "video"

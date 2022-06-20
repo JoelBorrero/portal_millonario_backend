@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from random import randint, randrange, choice, sample
 
-from ..course.models import Area, Course, VideoClass, Tag
+from backend.apps.course.models import Area, Course, VideoClass, Tag
 from ..orchestrator.models import (
     Bill,
     CourseFeedback,
@@ -88,8 +88,8 @@ AREAS = (
     {"name": "Crypto", "description": "Discover the complete Crypto's world"},
     {"name": "Trading", "description": "Discover the complete Trading's world"},
     {"name": "Business", "description": "Discover the complete Business's world"},
-    {"name": "Cash", "description": "Discover the complete Cash's world"},
     {"name": "Mining", "description": "Discover the complete Mining's world"},
+    {"name": "GoArbit", "description": "Discover the complete GoArbit's world"},
 )
 COURSES = (
     {
@@ -244,8 +244,12 @@ def perform_creation():
             )
             course = choice(created_data["courses"])
             teacher = choice(created_data["teachers"])
+            start_time = now + timedelta(hours=randint(1, 100), minutes=randrange(60))
             s = Schedule.objects.create(
-                calendar=str(calendar), course=course, teacher=teacher
+                calendar=str(calendar),
+                course=course,
+                teacher=teacher,
+                start_time=start_time,
             )
             for st in sample(
                 created_data["students"], randint(2, len(STUDENTS) - 1) // 2
@@ -255,6 +259,3 @@ def perform_creation():
                 created_data["video_classes"], randint(2, len(VIDEO_CLASSES) - 1) // 3
             ):
                 s.classes.add(c)
-
-
-perform_creation()

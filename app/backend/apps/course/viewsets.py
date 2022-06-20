@@ -6,7 +6,7 @@ from .models import Course
 from .serializers import CourseSerializer
 
 
-class CourseViewSet(viewsets.ModelViewSet):
-    model = Course
-    queryset = model.objects.all()
-    serializer_class = CourseSerializer
+# class CourseViewSet(viewsets.ModelViewSet):
+#     model = Course
+#     queryset = model.objects.all()
+#     serializer_class = CourseSerializer
