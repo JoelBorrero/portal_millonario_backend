@@ -6,8 +6,7 @@ from .models import Bill, CourseFeedback, Schedule, TeacherFeedback, Settings
 @admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
     list_display = (
-        "id",
-        "buyer",
+        "reference",
         "schedule",
         "amount",
         "payment_status",

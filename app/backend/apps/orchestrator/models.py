@@ -9,9 +9,13 @@ from ..utils.models import ModelBase
 
 class Schedule(ModelBase):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Curso")
-    students = models.ManyToManyField(Student, verbose_name="Estudiantes")
+    students = models.ManyToManyField(Student, verbose_name="Estudiantes", blank=True)
     teacher = models.ForeignKey(
-        Teacher, on_delete=models.SET_NULL, null=True, verbose_name="Profesor"
+        Teacher,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Profesor",
     )
     classes = models.ManyToManyField(VideoClass, verbose_name="Clases")
     calendar = models.TextField("Calendario", default="{}")
@@ -36,8 +40,12 @@ class Bill(ModelBase):
     payment_status = models.CharField("Estado", choices=PAYMENT_STATUSES, max_length=1)
     payment_date = models.DateTimeField("Fecha de pago", blank=True, null=True)
     payment_method = models.CharField("Método de pago", max_length=30)
-    reference = models.CharField("Referencia", max_length=30)
-    wompi_id = models.CharField("Id Wompi", max_length=50)
+    reference = models.CharField("Referencia", max_length=30, unique=True)
+    wompi_id = models.CharField("Id Wompi", max_length=50, unique=True)
+    referral = models.CharField("Referido", max_length=150, blank=True, null=True)
+    referral_tax = models.PositiveSmallIntegerField(
+        "Tasa de referido (%)", validators=[MaxValueValidator(100)]
+    )
 
     def __str__(self):
         return f"Factura #{self.id}"

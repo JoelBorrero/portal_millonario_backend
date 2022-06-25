@@ -59,7 +59,7 @@ cp env.template .env
 ./migrate_db.sh
 docker-compose exec app python3 manage.py shell
 >>> from backend.apps.utils.demo_info import *
->>> perform_create()
+>>> perform_creation()
 ```
 
 Una vez hecho esto, en caso de no tener el puerto `3002` expuesto, debemos hacerlo para acceder a nuestro backend de una forma remota.
