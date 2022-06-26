@@ -57,9 +57,12 @@ cd portal_millonario_backend
 cp env.template .env
 ./rebuild-container.sh
 ./migrate_db.sh
+```
+Y para iniciar con unos datos de prueba debemos ejecutar la consola de python
+```
 docker-compose exec app python3 manage.py shell
->>> from backend.apps.utils.demo_info import *
->>> perform_creation()
+>>> from scripts import demo_info
+>>> demo_info.perform_creation()
 ```
 
 Una vez hecho esto, en caso de no tener el puerto `3002` expuesto, debemos hacerlo para acceder a nuestro backend de una forma remota.

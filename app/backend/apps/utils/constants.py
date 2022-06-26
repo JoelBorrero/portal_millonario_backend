@@ -1,7 +1,8 @@
 GENDERS = (("m", "Hombre"), ("f", "Mujer"))
 PAYMENT_STATUSES = (
-    ("e", "Pago exitoso"),
-    ("p", "Pendiente de pago"),
-    ("r", "Pago rechazado"),
-    ("c", "Pago cancelado"),
+    ("a", "Transacción aprobada"),
+    ("d", "Transacción rechazada"),
+    ("v", "Transacción anulada"),
+    ("e", "Error interno Wompi"),
+    ("p", "Pendiente de validación"),
 )

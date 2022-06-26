@@ -1,13 +1,6 @@
-from rest_framework import viewsets, status
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
-from backend.apps.utils.shortcuts import get_object_or_none
-from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.contrib.auth.models import User
 from collections import OrderedDict
-from rest_framework import filters
 
 
 class CustomPagination(PageNumberPagination):

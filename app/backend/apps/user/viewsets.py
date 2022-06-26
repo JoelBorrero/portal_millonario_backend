@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from .models import Student
 from .serializers import StudentSerializer, TeacherShortSerializer
-from ..orchestrator.models import Bill
+from ..orchestrator.models import Invoice
 from ..orchestrator.serializers import ScheduleSerializer
 
 
@@ -21,8 +21,8 @@ class StudentViewSet(viewsets.ViewSet):
     @action(methods=["get"], detail=False)
     def get_courses_bought(self, request):
         """Returns the list of courses bought by the user"""
-        bills = Bill.objects.filter(buyer=request.user)
-        schedules = [bill.schedule for bill in bills]
+        invoices = Invoice.objects.filter(buyer=request.user)
+        schedules = [invoice.schedule for invoice in invoices]
         res = ScheduleSerializer(schedules, many=True).data
         return Response(res, status.HTTP_200_OK)
 

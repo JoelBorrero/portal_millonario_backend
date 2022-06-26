@@ -2,15 +2,22 @@ from ast import literal_eval
 
 from rest_framework import serializers
 
-from .models import Bill, Schedule
+from .models import Invoice, Schedule
 from ..course.serializers import VideoClassShortSerializer
 from ..user.serializers import TeacherShortSerializer
+from ..utils.constants import PAYMENT_STATUSES
 from ..utils.serializers import CustomSerializer
 
 
-class BillSerializer(CustomSerializer):
+class InvoiceSerializer(CustomSerializer):
+    payment_status = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_payment_status(obj):
+        return [s[1] for s in PAYMENT_STATUSES if s[0] == obj.payment_status][0]
+
     class Meta:
-        model = Bill
+        model = Invoice
         exclude = ("archived", "created", "updated")
 
 

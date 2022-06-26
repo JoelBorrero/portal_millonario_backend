@@ -1,11 +1,12 @@
 from django.contrib import admin
 
-from .models import Bill, CourseFeedback, Schedule, TeacherFeedback, Settings
+from .models import Invoice, CourseFeedback, Schedule, TeacherFeedback, Settings
 
 
-@admin.register(Bill)
-class BillAdmin(admin.ModelAdmin):
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "reference",
         "schedule",
         "amount",

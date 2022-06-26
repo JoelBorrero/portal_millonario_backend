@@ -3,17 +3,17 @@ from random import randint, randrange, choice, sample, uniform
 
 from django.contrib.auth.hashers import make_password
 
-from .constants import PAYMENT_STATUSES
-from ..course.models import Area, Course, VideoClass, Tag
-from ..orchestrator.models import (
-    Bill,
+from backend.apps.utils.constants import PAYMENT_STATUSES
+from backend.apps.course.models import Area, Course, VideoClass, Tag
+from backend.apps.orchestrator.models import (
+    Invoice,
     CourseFeedback,
     Feedback,
     TeacherFeedback,
     Schedule,
     Settings,
 )
-from ..user.models import Student, Teacher
+from backend.apps.user.models import Student, Teacher
 
 # USER
 STUDENTS = (
@@ -173,7 +173,7 @@ SETTINGS = (
 def perform_creation():
     created_data = {
         "areas": [],
-        "bills": [],
+        "invoices": [],
         "courses": [],
         "schedules": [],
         "settings": [],
@@ -264,7 +264,7 @@ def perform_creation():
                 s.classes.add(c)
     else:
         created_data["schedules"] = Schedule.objects.all()
-    if Bill.objects.count() < 10:
+    if Invoice.objects.count() < 10:
         payment_methods = [
             "Efectivo",
             "Tarjeta de crédito",
@@ -278,9 +278,9 @@ def perform_creation():
             payment_status = choice(PAYMENT_STATUSES)[0]
             payment_date = now - timedelta(hours=randint(1, 100), minutes=randrange(60))
             payment_method = choice(payment_methods)
-            reference = "reference"
-            wompi_id = "wompi_id"
-            b = Bill.objects.create(
+            reference = f"reference-{i}"
+            wompi_id = f"wompi_id-{i}"
+            b = Invoice.objects.create(
                 buyer=buyer,
                 schedule=schedule,
                 amount=amount,
@@ -290,4 +290,4 @@ def perform_creation():
                 reference=reference,
                 wompi_id=wompi_id,
             )
-            created_data["bills"].append(b)
+            created_data["invoices"].append(b)

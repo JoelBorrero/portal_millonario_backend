@@ -29,7 +29,7 @@ class Schedule(ModelBase):
         verbose_name_plural = "cronogramas"
 
 
-class Bill(ModelBase):
+class Invoice(ModelBase):
     buyer = models.ForeignKey(
         Student, on_delete=models.CASCADE, verbose_name="Comprador"
     )
@@ -37,14 +37,19 @@ class Bill(ModelBase):
         Schedule, on_delete=models.CASCADE, verbose_name="Cronograma"
     )
     amount = models.PositiveIntegerField("Valor")
-    payment_status = models.CharField("Estado", choices=PAYMENT_STATUSES, max_length=1)
+    payment_status = models.CharField(
+        "Estado", choices=PAYMENT_STATUSES, default="p", max_length=1
+    )
     payment_date = models.DateTimeField("Fecha de pago", blank=True, null=True)
     payment_method = models.CharField("Método de pago", max_length=30)
     reference = models.CharField("Referencia", max_length=30, unique=True)
     wompi_id = models.CharField("Id Wompi", max_length=50, unique=True)
     referral = models.CharField("Referido", max_length=150, blank=True, null=True)
     referral_tax = models.PositiveSmallIntegerField(
-        "Tasa de referido (%)", validators=[MaxValueValidator(100)]
+        "Tasa de referido (%)",
+        validators=[MaxValueValidator(100)],
+        blank=True,
+        null=True,
     )
 
     def __str__(self):
