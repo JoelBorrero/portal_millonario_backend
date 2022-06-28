@@ -1,4 +1,4 @@
-from ast import literal_eval
+import json
 
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
@@ -9,10 +9,15 @@ from ..utils.serializers import CustomSerializer
 
 class StudentSerializer(CustomSerializer):
     progress = serializers.SerializerMethodField()
+    referral_earnings = serializers.SerializerMethodField()
 
     @staticmethod
-    def get_progress(obj):
-        return literal_eval(obj.progress)
+    def get_progress(student):
+        return json.loads(student.progress)
+
+    @staticmethod
+    def get_referral_earnings(student):
+        return json.loads(student.referral_earnings)
 
     class Meta:
         model = Student
@@ -36,6 +41,12 @@ class TeacherShortSerializer(ModelSerializer):
 
 
 # class TeacherSerializer(CustomSerializer):
+#     referral_earnings = serializers.SerializerMethodField()
+#
+#     @staticmethod
+#     def get_referral_earnings(student):
+#         return json.loads(student.referral_earnings)
+#
 #     class Meta:
 #         model = Teacher
 #         exclude = []

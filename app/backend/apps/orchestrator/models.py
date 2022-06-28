@@ -30,6 +30,7 @@ class Schedule(ModelBase):
 
 
 class Invoice(ModelBase):
+    reference = models.CharField("Referencia", max_length=30, unique=True)
     buyer = models.ForeignKey(
         Student, on_delete=models.CASCADE, verbose_name="Comprador"
     )
@@ -40,9 +41,7 @@ class Invoice(ModelBase):
     payment_status = models.CharField(
         "Estado", choices=PAYMENT_STATUSES, default="p", max_length=1
     )
-    payment_date = models.DateTimeField("Fecha de pago", blank=True, null=True)
     payment_method = models.CharField("Método de pago", max_length=30)
-    reference = models.CharField("Referencia", max_length=30, unique=True)
     wompi_id = models.CharField("Id Wompi", max_length=50, unique=True)
     referral = models.CharField("Referido", max_length=150, blank=True, null=True)
     referral_tax = models.PositiveSmallIntegerField(
@@ -51,6 +50,7 @@ class Invoice(ModelBase):
         blank=True,
         null=True,
     )
+    paid_to_referral = models.BooleanField("Pagado a referido", default=False)
 
     def __str__(self):
         return f"Factura #{self.id}"
@@ -106,3 +106,23 @@ class TeacherFeedback(Feedback):
     class Meta:
         verbose_name = "feedback de profesor"
         verbose_name_plural = "feedbacks de profesores"
+
+
+class ReferralPayment(ModelBase):
+    amount = models.PositiveIntegerField()
+    description = models.TextField("Descripción", default="{}", editable=False)
+
+    class Meta:
+        abstract = True
+
+
+class StudentReferralPayment(ReferralPayment):
+    student = models.ForeignKey(
+        Student, verbose_name="Estudiante", on_delete=models.CASCADE
+    )
+
+
+class TeacherReferralPayment(ReferralPayment):
+    teacher = models.ForeignKey(
+        Teacher, verbose_name="Profesor", on_delete=models.CASCADE
+    )

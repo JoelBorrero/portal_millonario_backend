@@ -1,6 +1,7 @@
+import logging
+import json
 import os
 from datetime import datetime
-import logging
 
 import coreapi
 import coreschema
@@ -12,7 +13,7 @@ from rest_framework.schemas import AutoSchema
 
 from .models import Invoice, Schedule, Settings
 from .serializers import InvoiceSerializer
-from ..user.models import Student
+from ..user.models import Student, Teacher
 
 logger = logging.getLogger(__name__)
 
@@ -46,29 +47,41 @@ class InvoiceViewSet(viewsets.ViewSet):
         data = request.data
         user = Student.objects.get(pk=request.user.pk)
         schedule = Schedule.objects.get(pk=data["schedule_id"])
-        referral_tax = Settings.objects.last().referral_tax
-        created = Invoice.objects.create(
+        referral_tax = Settings.objects.get(is_active=True).referral_tax
+        referral = data["referral"] if data["referral"] != user.username else ""
+        if referral:
+            referral_user = Student.objects.filter(username=referral).first()
+            if not referral_user:
+                referral_user = Teacher.objects.filter(username=referral).first()
+                if not referral_user:
+                    return Response(
+                        {"error": f"User {referral} does not exists."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+        invoice = Invoice.objects.create(
             buyer=user,
             schedule=schedule,
             amount=data["amount_in_cents"] / 100,
             payment_method=data["payment_method"],
             reference=data["reference"],
             wompi_id=data["wompi_id"],
-            referral=data["referral"],
+            referral=referral,
             referral_tax=referral_tax,
         )
-        response = InvoiceSerializer(created).data
+        response = InvoiceSerializer(invoice).data
         return Response(response, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def retrieve(request, pk):
         """
-        Returns an invoice
+        Returns an invoice. By default, every transaction is stored as pending (p) until it be requested in this
+        function, which validate it through Wompi; then checks if referral user exists and assigns him the new income.
         """
         invoice = Invoice.objects.get(pk=pk)
         if request.user.pk != invoice.buyer.pk:
             return Response({"error": "Unauthorized to get invoice"}, 401)
-        if invoice.payment_status == "p":
+        if invoice.payment_status == "p":  # Pending to validate
+            # Validate with Wompi
             wompi_private_key = os.environ.get("WOMPI_PRIVATE_KEY")
             env = (
                 "sandbox" if wompi_private_key.startswith("prv_test_") else "production"
@@ -77,6 +90,24 @@ class InvoiceViewSet(viewsets.ViewSet):
             headers = {"Authorization": f"Bearer {wompi_private_key}"}
             response = requests.get(url, headers=headers).json()["data"]
             invoice.payment_status = response["status"][0].lower()
+            if invoice.payment_status == "a" and invoice.referral:  # Status is Accepted
+                # Add the earning to the referral
+                referral_user = Student.objects.filter(
+                    username=invoice.referral
+                ).first()
+                if not referral_user:
+                    referral_user = Teacher.objects.filter(
+                        username=invoice.referral
+                    ).first()
+                earnings = json.loads(referral_user.referral_earnings)
+                earnings["pending"].append(
+                    {invoice.pk: invoice.amount * invoice.referral_tax / 100}
+                )
+                referral_user.referral_earnings = json.dumps(earnings)
+                referral_user.save()
+                # Add the user to the schedule bought
+                invoice.schedule.students.add(invoice.buyer)
+                invoice.schedule.save()
             invoice.save()
         serializer = InvoiceSerializer(invoice)
         return Response(serializer.data, 200)

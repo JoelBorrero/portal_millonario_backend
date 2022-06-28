@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.contrib.auth import authenticate
@@ -8,11 +9,10 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .models import Student
+from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherShortSerializer
 from ..orchestrator.models import Invoice
-from ..orchestrator.serializers import ScheduleSerializer
-
+from ..orchestrator.serializers import InvoiceSerializer, ScheduleSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +21,25 @@ class StudentViewSet(viewsets.ViewSet):
     @action(methods=["get"], detail=False)
     def get_courses_bought(self, request):
         """Returns the list of courses bought by the user"""
-        invoices = Invoice.objects.filter(buyer=request.user)
+        invoices = Invoice.objects.filter(buyer=request.user, payment_status="a")
         schedules = [invoice.schedule for invoice in invoices]
         res = ScheduleSerializer(schedules, many=True).data
-        return Response(res, status.HTTP_200_OK)
+        return Response(res, status=status.HTTP_200_OK)
+
+    @action(methods=["get"], detail=False)
+    def get_my_earnings(self, request):
+        user = Student.objects.filter(username=request.user.username).first()
+        if not user:
+            user = Teacher.objects.get(username=request - user.username)
+        invoices = Invoice.objects.filter(referral=user.username, payment_status="a")
+        validation = json.loads(user.referral_earnings)
+        validation = validation["paid"] + validation["pending"]
+        validation = [list(invoice.keys())[0] for invoice in validation]
+        logger.info(validation)
+        invoices_validation = Invoice.objects.filter(pk__in=validation)
+        assert (invoices == invoices_validation, "err validation")
+        serializer = InvoiceSerializer(invoices, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=["post"], detail=False, permission_classes=[AllowAny])
     def login(self, request):
@@ -41,10 +56,10 @@ class StudentViewSet(viewsets.ViewSet):
                 res = TeacherShortSerializer(user).data
             token, _ = Token.objects.get_or_create(user=user)
             res["token"] = token.key
-            return Response(res, status.HTTP_200_OK)
+            return Response(res, status=status.HTTP_200_OK)
         else:
             res = {"error": "Invalid credentials."}
-            return Response(res, status.HTTP_400_BAD_REQUEST)
+            return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=["post"], detail=False, permission_classes=[AllowAny])
     def register(self, request):
@@ -64,16 +79,6 @@ class StudentViewSet(viewsets.ViewSet):
             res = StudentSerializer(student).data
             token, _ = Token.objects.get_or_create(user=student)
             res["token"] = token.key
-            return Response(res, status.HTTP_201_CREATED)
+            return Response(res, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({"error": str(e)}, status.HTTP_400_BAD_REQUEST)
-
-    # @action(methods=["post"], detail=True)
-    # def update_profile(self, request):
-    #     """
-    #     Register a new student into the students database
-    #
-    #     Body - {first_name: str, last_name: str, gender: str, profile_pic: str, bio: str}
-    #     """
-    #     res = {}
-    #     return Response(res, status.HTTP_200_OK)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

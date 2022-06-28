@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Invoice, CourseFeedback, Schedule, TeacherFeedback, Settings
+from .models import *
 
 
 @admin.register(Invoice)
@@ -11,9 +11,9 @@ class InvoiceAdmin(admin.ModelAdmin):
         "schedule",
         "amount",
         "payment_status",
-        "payment_date",
+        "created",
     )
-    list_filter = ("payment_status", "buyer")
+    list_filter = ("payment_status", "buyer", "paid_to_referral")
 
 
 @admin.register(CourseFeedback)
@@ -37,3 +37,15 @@ class SettingsAdmin(admin.ModelAdmin):
 class TeacherFeedbackAdmin(admin.ModelAdmin):
     list_display = ("id", "student", "teacher", "rate", "comment")
     list_filter = ("rate", "course")
+
+
+@admin.register(StudentReferralPayment)
+class StudentReferralAdmin(admin.ModelAdmin):
+    list_display = ("id", "student", "amount", "updated")
+    list_filter = ("student",)
+
+
+@admin.register(TeacherReferralPayment)
+class TeacherReferralAdmin(admin.ModelAdmin):
+    list_display = ("id", "teacher", "amount", "updated")
+    list_filter = ("teacher",)

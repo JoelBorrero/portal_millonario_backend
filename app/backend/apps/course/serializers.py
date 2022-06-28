@@ -1,4 +1,4 @@
-from ast import literal_eval
+import ast
 
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
@@ -14,7 +14,7 @@ class CourseSerializer(CustomSerializer):
 
     @staticmethod
     def get_content(obj):
-        return literal_eval(obj.content)
+        return ast.literal_eval(obj.content)
 
     class Meta:
         model = Course

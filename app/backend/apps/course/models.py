@@ -25,6 +25,7 @@ class Course(ModelBase):
     description = models.TextField("Descripción", default="")
     content = models.TextField("Contenido", default="[]")
     intro_url = models.CharField("Intro url", max_length=200)
+    thumbnail = models.CharField("Portada", max_length=200)
     price = models.PositiveIntegerField("Precio")
     teachers = models.ManyToManyField(Teacher, blank=True, verbose_name="Profesores")
     areas = models.ManyToManyField(Area, blank=True)

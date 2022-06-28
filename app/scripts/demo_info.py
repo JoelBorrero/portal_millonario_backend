@@ -32,7 +32,7 @@ STUDENTS = (
     {
         "first_name": "Clarke",
         "last_name": "Waller",
-        "username": "keir_waller3",
+        "username": "clarke_waller3",
         "gender": "f",
     },
     {
@@ -93,27 +93,16 @@ COURSES = (
     {
         "name": "Study Academic Portal",
         "description": "Study Academic Portal: Based on adjectives you gave us",
-        "intro_url": "https://ConfessionsofaCryptoFreak",
     },
     {
         "name": "Confessions of a Crypto Freak",
         "description": "Confessions of a Crypto Freak: Sounds interesting",
-        "intro_url": "http:/TradingAddict",
     },
-    {
-        "name": "Trading Addict",
-        "description": "Trading Addict: Sounds keen",
-        "intro_url": "http:/ThePWord",
-    },
-    {
-        "name": "The P Word",
-        "description": "The P Word: Based on your first initial",
-        "intro_url": "https://Portal Cash'sNotSoSecretDiary",
-    },
+    {"name": "Trading Addict", "description": "Trading Addict: Sounds keen"},
+    {"name": "The P Word", "description": "The P Word: Based on your first initial"},
     {
         "name": "Portal Cash's Not-So-Secret Diary",
         "description": "Portal Cash's Not-So-Secret Diary: A classic title format",
-        "intro_url": "http://portals",
     },
 )
 TAGS = (
@@ -202,8 +191,27 @@ def perform_creation():
         t, _ = Tag.objects.update_or_create(name=tag["name"], defaults=tag)
         created_data["tags"].append(t)
     for course in COURSES:
-        course["price"] = randrange(0, 500, 25)
-        c, _ = Course.objects.update_or_create(name=course["name"], defaults=course)
+        course["price"] = randrange(99900, 999900, 50000)
+        pre = ["Working with ", "Relating ", ""]
+        pos = [" importance.", " relation.", " meaning.", "."]
+        course[
+            "intro_url"
+        ] = "https://productsimgs.s3.us-east-2.amazonaws.com/Sony+4K+Demo_+Another+World.mp4"
+        course["thumbnail"] = choice(
+            [
+                "https://revistabyte.es/wp-content/uploads/2018/10/back-to-the-future-696x392.jpg.webp",
+                "https://www.edx.org/static/9f3ff114d126f7b248ed5bd72adc5dbb/Aprende_trading.jpg",
+                "https://assets.iproup.com/cdn-cgi/image/w=880,f=webp/https://assets.iproup.com/assets/jpg/2021/09/22155.jpg",
+                "https://www.noticiasconfirmadas.com/wp-content/uploads/2022/02/74c03414-1ed9-4703-a287-2f521a2b7177_alta-libre-aspect-ratio_default_0.jpg",
+            ]
+        )
+        content = [
+            f"{choice(pre)}{choice(AREAS)['name']} and his {choice(TAGS)['name']}{choice(pos)}"
+            for i in range(10)
+        ]
+        c, _ = Course.objects.update_or_create(
+            name=course["name"], content=content, defaults=course
+        )
         if not c.teachers.count():
             for t in sample(
                 created_data["teachers"], randint(1, len(TEACHERS) - 1) // 2
@@ -276,7 +284,6 @@ def perform_creation():
             schedule = choice(created_data["schedules"])
             amount = schedule.course.price
             payment_status = choice(PAYMENT_STATUSES)[0]
-            payment_date = now - timedelta(hours=randint(1, 100), minutes=randrange(60))
             payment_method = choice(payment_methods)
             reference = f"reference-{i}"
             wompi_id = f"wompi_id-{i}"
@@ -285,7 +292,6 @@ def perform_creation():
                 schedule=schedule,
                 amount=amount,
                 payment_status=payment_status,
-                payment_date=payment_date,
                 payment_method=payment_method,
                 reference=reference,
                 wompi_id=wompi_id,
